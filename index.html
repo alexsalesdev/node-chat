@@ -11,16 +11,18 @@
         #messages { list-style-type: none; margin: 0; padding: 0; }
         #messages li { padding: 5px 10px; }
         #messages li:nth-child(odd) { background: #eee; }
-        #username {width: 200px;}
-        #login {width:100px;}
+        .inputbox {width: 200px;}
+        #login, #create, #join {width:100px;}
     </style>
 
 
 
 
 </head>
-<body>
-<input type="text" id="username"/> <button id="login">Login</button>
+<br>
+<input type="text" class="inputbox" id="username"/> <button id="login">Login</button> </br>
+<button id="create">Create</button> </br>
+<input type="text" class="inputbox" id="roomId"/> <button id="join">Join</button> </br>
 <ul id="messages"></ul>
 <form action="">
     <input id="m" autocomplete="off" /><button>Send</button>
@@ -29,7 +31,8 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
-    var userProfile = { "id" : "", "name" : ""};
+    var userProfile = { "id" : "", "username" : ""};
+    var joinedUser =  { "id" : "", "username" : ""};
     var socket = io();
 
     $('form').submit(function(){
@@ -43,8 +46,23 @@
         return false;
     });
 
+    $('#create').click(function(){
+        socket.emit('create', "");
+        return false;
+    });
+
+    $('#join').click(function(){
+        socket.emit('join', $("#roomId").val());
+        return false;
+    });
+
     socket.on('login.success', function(data){
         userProfile = data;
+    });
+
+    socket.on('join.success', function(data){
+        joinedUser = eval(data);
+        $('#messages').append($('<li>').text("User joined your room named " + joinedUser.username));
     });
 
 
